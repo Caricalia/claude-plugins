@@ -1,0 +1,4 @@
+node_modules/
+*.log
+*-checkup.md
+.DS_Store

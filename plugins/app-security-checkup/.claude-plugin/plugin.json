@@ -1,0 +1,8 @@
+{
+  "name": "app-security-checkup",
+  "description": "Chequeo de seguridad pasivo de tu propia web (verificado por DNS). Solo lectura, sin exploits.",
+  "version": "0.1.0",
+  "author": { "name": "Carlos Martínez", "url": "https://github.com/Caricalia" },
+  "homepage": "https://github.com/Caricalia/app-security-checkup",
+  "license": "MIT"
+}

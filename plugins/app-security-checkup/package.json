@@ -1,0 +1,10 @@
+{
+  "name": "app-security-checkup",
+  "version": "0.1.0",
+  "description": "Chequeo de seguridad de TU app web, solo lectura y sin exploits. Verifica que el dominio es tuyo antes de tocar nada.",
+  "type": "module",
+  "bin": { "app-security-checkup": "bin/checkup.mjs" },
+  "engines": { "node": ">=20" },
+  "license": "MIT",
+  "scripts": { "start": "node bin/checkup.mjs" }
+}
