@@ -20,15 +20,15 @@ export async function checkOrigin(ctx) {
   try { ips = await resolve4(domain); } catch {}
   ctx.dns = { cnames, ips };
 
-  const behindCdn = cnames.some((c) => CDN_CNAMES.test(c)) || ips.some(isCloudflareIp);
+  const behindCdn = Boolean(ctx.edge) || cnames.some((c) => CDN_CNAMES.test(c)) || ips.some(isCloudflareIp);
   if (!behindCdn) {
-    findings.add(C, { id: "ORIGIN-NO-CDN", severity: "info", title: "El dominio apunta directo al origen (sin CDN/WAF delante)",
+    findings.add(C, { id: "ORIGIN-NO-CDN", status: "hardening", priority: "medium", title: "El dominio apunta directo al origen (sin CDN/WAF delante)",
       evidence: `CNAME: ${cnames.join(", ") || "-"} · A: ${ips.join(", ") || "-"}`,
       why: "Sin un borde delante no hay WAF, ni rate-limit, ni bloqueo de escáneres: todo lo absorbe tu servidor.",
       fix: "Pon un CDN con WAF (Cloudflare Free ya sirve) y proxía el registro. Luego aplica el resto de este informe en el borde." });
     return;
   }
-  findings.pass(C, "Hay un CDN/proxy delante del dominio");
+  findings.pass(C, `Hay un CDN/proxy delante del dominio${ctx.edge ? ` (${ctx.edge})` : ""}`);
 
   // El CNAME suele delatar el hosting. Si podemos hablar con su edge con
   // nuestro Host, el CDN es decorativo.
@@ -37,7 +37,7 @@ export async function checkOrigin(ctx) {
   const platform = HOSTING.find(([re]) => re.test(target))[1];
   const direct = await sniProbe(target, domain);
   if (direct.status && direct.status !== 404 && direct.status < 500) {
-    findings.add(C, { id: "ORIGIN-BYPASS", severity: "high", title: "El origen responde saltándose el CDN",
+    findings.add(C, { id: "ORIGIN-BYPASS", severity: "high", repro: `curl -s -o /dev/null -D - --connect-to ${domain}:443:${target}:443 'https://${domain}/'`, title: "El origen responde saltándose el CDN",
       evidence: `TLS a ${target} con SNI/Host ${domain} → HTTP ${direct.status}. Cualquiera puede repetirlo: curl --connect-to ${domain}:443:${target}:443 https://${domain}/`,
       why: "WAF, rate-limit, bloqueo de bots y cabeceras de seguridad del CDN no aplican a quien conecte directamente. Y el host está en tu DNS público.",
       fix: fixes.cdnOnly[platform] || fixes.cdnOnly.generic });
@@ -51,7 +51,7 @@ export async function checkOrigin(ctx) {
 function sniProbe(host, sni) {
   return new Promise((resolve) => {
     const s = connect({ host, port: 443, servername: sni, rejectUnauthorized: false, timeout: 8000 }, () => {
-      s.write(`HEAD / HTTP/1.1\r\nHost: ${sni}\r\nUser-Agent: app-security-checkup/0.1\r\nConnection: close\r\n\r\n`);
+      s.write(`HEAD / HTTP/1.1\r\nHost: ${sni}\r\nUser-Agent: app-security-checkup/0.2\r\nConnection: close\r\n\r\n`);
     });
     let data = "";
     s.on("data", (d) => { data += d; if (data.length > 2000) s.end(); });

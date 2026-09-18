@@ -3,7 +3,7 @@
 // wordlists, sin reintentos agresivos, y con un User-Agent que dice quién es.
 import { setTimeout as sleep } from "node:timers/promises";
 
-export const USER_AGENT = "app-security-checkup/0.1 (+https://github.com/Caricalia/claude-plugins; solo dominios propios)";
+export const USER_AGENT = "app-security-checkup/0.2 (+https://github.com/Caricalia/claude-plugins; solo dominios propios)";
 
 export class Budget {
   constructor({ max = 250, perSecond = 3 } = {}) {

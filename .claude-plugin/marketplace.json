@@ -8,11 +8,11 @@
     {
       "name": "app-security-checkup",
       "source": "./plugins/app-security-checkup",
-      "description": "Revisa la seguridad de tu propia web: origen fuera del CDN, subdominios secuestrables, CSP/cabeceras, CORS, cookies, ficheros y endpoints expuestos, open redirect, host-header y reflexión (XSS). Pasivo y verificado por DNS."
+      "description": "Revisa la seguridad de tu propia web: origen fuera del CDN, subdominios secuestrables, CSP/cabeceras, CORS, cookies, ficheros y endpoints expuestos, open redirect, host-header, reflexión (XSS), claves en el JS público y source maps. Pasivo y verificado por DNS."
     }
   ],
   "metadata": {
     "description": "Herramientas de seguridad para founders: revisa la configuración de tu propia web sin ser un pentester.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   }
 }

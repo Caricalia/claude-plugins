@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Caricalia/claude-plugins/plugins/app-security-checkup/report-schema.json",
+  "title": "app-security-checkup report",
+  "type": "object",
+  "required": ["schema_version", "tool", "target", "generated_at", "requests", "edge", "waf_challenge", "summary", "findings", "checks"],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": { "name": { "const": "app-security-checkup" }, "version": { "type": "string" } }
+    },
+    "target": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "requests": { "type": "integer", "minimum": 0 },
+    "edge": { "type": ["string", "null"], "description": "CDN/borde detectado por cabeceras de respuesta" },
+    "waf_challenge": { "type": "boolean", "description": "true si el WAF sirvió un challenge y el informe es parcial" },
+    "summary": {
+      "type": "object",
+      "required": ["confirmed", "needs_validation", "hardening", "passed"],
+      "properties": {
+        "confirmed": {
+          "type": "object",
+          "required": ["critical", "high", "medium", "low"],
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "needs_validation": { "type": "integer", "minimum": 0 },
+        "hardening": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check", "title", "status"],
+        "properties": {
+          "check": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "enum": ["pass", "skip"] },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": ["check", "id", "status", "title", "evidence", "why", "fix", "severity", "priority", "unresolved", "repro"],
+      "properties": {
+        "check": { "type": "string" },
+        "id": { "type": "string", "pattern": "^[A-Z0-9-]+$" },
+        "status": { "enum": ["confirmed", "needs_validation", "hardening"] },
+        "title": { "type": "string" },
+        "evidence": { "type": "string" },
+        "why": { "type": "string" },
+        "fix": { "type": "string" },
+        "severity": { "enum": ["critical", "high", "medium", "low", null] },
+        "priority": { "enum": ["high", "medium", "low", null] },
+        "unresolved": { "type": ["string", "null"] },
+        "repro": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "confirmed" } } },
+          "then": { "properties": { "severity": { "type": "string" }, "priority": { "const": null }, "unresolved": { "const": null } } } },
+        { "if": { "properties": { "status": { "const": "needs_validation" } } },
+          "then": { "properties": { "severity": { "const": null }, "priority": { "const": null }, "unresolved": { "type": "string" } } } },
+        { "if": { "properties": { "status": { "const": "hardening" } } },
+          "then": { "properties": { "severity": { "const": null }, "priority": { "type": "string" }, "unresolved": { "const": null } } } }
+      ]
+    }
+  }
+}

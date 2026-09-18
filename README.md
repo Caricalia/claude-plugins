@@ -14,7 +14,7 @@ de [@caricalia](https://github.com/Caricalia).
 
 | Plugin | Qué hace |
 |--------|----------|
-| [`app-security-checkup`](plugins/app-security-checkup) | Chequeo de seguridad pasivo de tu propia web (verificado por DNS): origen fuera del CDN, subdominios secuestrables, CSP/cabeceras, CORS, cookies, ficheros/endpoints expuestos, open redirect, host-header y reflexión (XSS). Solo lectura, sin exploits. |
+| [`app-security-checkup`](plugins/app-security-checkup) | Chequeo de seguridad pasivo de tu propia web (verificado por DNS): origen fuera del CDN, subdominios secuestrables, CSP/cabeceras, CORS, cookies, ficheros/endpoints expuestos, open redirect, host-header, reflexión (XSS), claves en el JS público y source maps. Separa lo confirmado de lo que hay que validar y del endurecimiento. Solo lectura, sin exploits. |
 
 ## Estructura
 
